@@ -1,11 +1,9 @@
 import sys
 
-import sreality
-
 
 def main() -> int:
     """Main function does nothing, only returns 0"""
-
+    print("ahoj")
     return 0
 
 
