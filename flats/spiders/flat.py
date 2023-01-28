@@ -1,5 +1,6 @@
-import flat
 import scrapy
+
+from flats.items import Flat
 
 
 class FlatSpider(scrapy.Spider):
@@ -26,7 +27,7 @@ class FlatSpider(scrapy.Spider):
 
     def parse_one(self, flat_json):
 
-        yield flat.Flat(
+        yield Flat(
             name=flat_json["name"],
             photo_urls=flat_json["_links"]["images"]["href"],
         )
