@@ -1,4 +1,6 @@
+virtualenv
 scrapy
 flask
 python-dotenv
 psycopg2-binary
+flask-sqlalchemy

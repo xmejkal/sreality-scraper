@@ -9,7 +9,7 @@ FLAT_IMAGE_DEFAULT_WIDTH = 400
 class FlatsSpider(scrapy.Spider):
     name = "flats"
     allowed_domains = ["www.sreality.cz"]
-    pages = 2
+    pages = 1
     start_urls = [
         f"https://www.sreality.cz/api/cs/v2/estates?category_main_cb=1&category_type_cb=1&page={page}&per_page=50"
         for page in range(1, 1 + pages)
@@ -31,17 +31,21 @@ class FlatsSpider(scrapy.Spider):
         # open_in_browser(response)
 
         response_json = response.json()
-        flat = Flat(response_json["name"]["value"], [])
 
-        for image in response_json["_embedded"]["images"]:
-            image_link_dynamic_down = image["_links"]["dynamicDown"]
-            if image_link_dynamic_down:
-                url = (
-                    image_link_dynamic_down["href"]
-                    .replace("{width}", str(FLAT_IMAGE_DEFAULT_WIDTH))
-                    .replace("{height}", str(FLAT_IMAGE_DEFAULT_HEIGHT))
-                )
+        flat_title = response_json.get("name").get("value")
+        flat_address = response_json.get("locality").get("value")
 
-                flat.photo_urls.append(url)
+        flat_description = f"{flat_title}: {flat_address}"
+        flat = Flat(flat_description, [])
 
+        image = response_json["_embedded"]["images"][0]
+        image_link_dynamic_down = image["_links"]["dynamicDown"]
+        if image_link_dynamic_down:
+            url = (
+                image_link_dynamic_down["href"]
+                .replace("{width}", str(FLAT_IMAGE_DEFAULT_WIDTH))
+                .replace("{height}", str(FLAT_IMAGE_DEFAULT_HEIGHT))
+            )
+
+            flat.photo_url = url
         yield flat

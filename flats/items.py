@@ -10,4 +10,4 @@ from typing import Optional
 @dataclass
 class Flat:
     name: str
-    photo_urls: list[str]
+    photo_url: str
