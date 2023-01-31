@@ -4,6 +4,8 @@
 # See: https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 
 
+import os
+
 import psycopg2
 
 # useful for handling different item types with a single interface
@@ -21,10 +23,11 @@ class FlatsPipeline:
 
     def __init__(self):
 
-        hostname = "localhost"
-        username = "postgres"
-        password = "mysecretpassword"
-        database = "postgres"
+        database_name = os.environ.get("POSTGRES_DB")
+        hostname = os.environ.get("POSTGRES_HOST")
+        username = os.environ.get("POSTGRES_USER")
+        password = os.environ.get("POSTGRES_PASSWORD")
+        database = database_name
 
         ## Create/Connect to database
         self.connection = psycopg2.connect(
@@ -32,10 +35,10 @@ class FlatsPipeline:
         )
 
         self.cur = self.connection.cursor()
-        self.cur.execute("DROP TABLE IF EXISTS flats")
+        self.cur.execute(f"DROP TABLE IF EXISTS {database_name}")
         self.cur.execute(
-            """
-        CREATE TABLE IF NOT EXISTS flats(
+            f"""
+        CREATE TABLE IF NOT EXISTS {database_name}(
             id serial PRIMARY KEY, 
             name VARCHAR(255),
             photo_url VARCHAR(255)
